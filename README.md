@@ -6,7 +6,7 @@ CMPUT 496 - Topics in Computing Science: Search, Knowledge, and Simulations
 ### What is this repository for? ###
 
 * Assignment 1
-* https://bitbucket.org/skyu0221/cmput466-assignment1/overview
+* https://github.com/skyu0221/cmput496/tree/master/NoGo1
 
 ### Contribution guidelines ###
 
