@@ -12,6 +12,7 @@ CMPUT 496 - Topics in Computing Science: Search, Knowledge, and Simulations
 
 * Writing tests
 * Code review
+* MIT Licensed
 
 ### Members ###
 
