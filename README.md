@@ -1,4 +1,4 @@
-# README #
+# CMPUT 496 Group Repository #
 
 University of Alberta - Winter 2017
 CMPUT 496 - Topics in Computing Science: Search, Knowledge, and Simulations
