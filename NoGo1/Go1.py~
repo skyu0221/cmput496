@@ -19,10 +19,7 @@ class RandomPlayer():
         self.version = 0.1
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color)
-
-"""
-	Start Here
-"""
+        
 class NoGo():
 
 	def __init__( self ):
