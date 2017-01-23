@@ -9,7 +9,7 @@ class GoBoardUtil(object):
     
     @staticmethod       
     def play(komi,board,color,limit=None):
-        twopass=2
+        twopass=1
         if limit:
             for i in range(limit):
                 while twopass:

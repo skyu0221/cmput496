@@ -15,19 +15,10 @@ class RandomPlayer():
         version : float
             version number (used by the GTP interface).
         """
-        self.name = "Go1"
+        self.name = "NoGo1"
         self.version = 0.1
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color)
-
-"""
-	Start Here
-"""
-class NoGo():
-
-	def __init__( self ):
-
-		pass
 
 def run():
     """

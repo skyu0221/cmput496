@@ -63,7 +63,7 @@ class GtpConnection():
             "known_command": (1, 'Usage: known_command CMD_NAME'),
             "set_free_handicap": (1, 'Usage: set_free_handicap MOVE (e.g. A4)'),
             "genmove": (1, 'Usage: genmove {w,b}'),
-            "play": (2, 'Usage: play {b,w} MOVE'),
+            #"play": (2, 'Usage: play {b,w} MOVE'),
             "legal_moves": (1, 'Usage: legal_moves {w,b}')
         }
     
@@ -288,22 +288,42 @@ class GtpConnection():
             the move to play (e.g. A5)
         """
         try:
+        
+            if len( args ) != 2:
+                self.respond( "illegal move: {} (wrong number of arguments)".format( " ".join( args ) ) )
+                return
+            
             board_color = args[0].lower()
             board_move = args[1]
-            color= GoBoardUtil.color_to_int(board_color)
+            
+            try:
+                color= GoBoardUtil.color_to_int(board_color)
+            except ValueError:
+                self.respond( "illegal move: {} (wrong color)".format( " ".join( args ) ) )
+                return
+            
             if args[1].lower()=='pass':
                 self.debug_msg("Player {} is passing\n".format(args[0]))
-                self.respond()
+                self.respond( "illegal move: {} (passing)".format( " ".join( args ) ) )
                 return
-            move = GoBoardUtil.move_to_coord(args[1], self.board.size)
+            
+            try:
+                move = GoBoardUtil.move_to_coord(args[1], self.board.size)
+            except ValueError:
+                self.respond( "illegal move: {} (wrong coordinate)".format( " ".join( args ) ) )
+                return
+                
             if move:
                 move = self.board._coord_to_point(move[0],move[1])
             # move == None on pass
             else:
                 self.error("Error in executing the move %s, check given move: %s"%(move,args[1]))
                 return
-            if not self.board.move(move, color):
-                self.respond("Illegal Move: {}".format(board_move))
+            
+            result = self.board.move( move, color )
+            
+            if not result[0]:
+                self.respond("illegal Move: {} ({})".format( " ".join( args ), result[1] ) )
                 return
             else:
                 self.debug_msg("Move: {}\nBoard:\n{}\n".format(board_move, str(self.board.get_twoD_board())))
@@ -333,7 +353,7 @@ class GtpConnection():
                                                           self.board.ko_constraint))
             move = self.go_engine.get_move(self.board, color)
             if move is None:
-                self.respond("pass")
+                self.respond("{} lose".format( board_color ))
                 return
 
             if not self.board.check_legal(move, color):
