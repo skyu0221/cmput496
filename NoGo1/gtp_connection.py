@@ -290,7 +290,7 @@ class GtpConnection():
         try:
         
             if len( args ) != 2:
-                self.respond( "illegal move: {} (wrong number of arguments)".format( " ".join( args ) ) )
+                self.respond( "illegal move: {} wrong number of arguments".format( " ".join( args ) ) )
                 return
             
             board_color = args[0].lower()
@@ -299,18 +299,18 @@ class GtpConnection():
             try:
                 color= GoBoardUtil.color_to_int(board_color)
             except ValueError:
-                self.respond( "illegal move: {} (wrong color)".format( " ".join( args ) ) )
+                self.respond( "illegal move: {} wrong color".format( " ".join( args ) ) )
                 return
             
             if args[1].lower()=='pass':
                 self.debug_msg("Player {} is passing\n".format(args[0]))
-                self.respond( "illegal move: {} (passing)".format( " ".join( args ) ) )
+                self.respond( "illegal move: {} passing".format( " ".join( args ) ) )
                 return
             
             try:
                 move = GoBoardUtil.move_to_coord(args[1], self.board.size)
             except ValueError:
-                self.respond( "illegal move: {} (wrong coordinate)".format( " ".join( args ) ) )
+                self.respond( "illegal move: {} wrong coordinate".format( " ".join( args ) ) )
                 return
                 
             if move:
@@ -323,7 +323,7 @@ class GtpConnection():
             result = self.board.move( move, color )
             
             if not result[0]:
-                self.respond("illegal Move: {} ({})".format( " ".join( args ), result[1] ) )
+                self.respond("illegal Move: {} {}".format( " ".join( args ), result[1] ) )
                 return
             else:
                 self.debug_msg("Move: {}\nBoard:\n{}\n".format(board_move, str(self.board.get_twoD_board())))

@@ -13,32 +13,32 @@ play b b4
 play b b6
 
 10 play b b8
-#? illegal move: b b8 (wrong coordinate)
+#? [illegal move: b b8 wrong coordinate]
 
 20 play b b7 c1
-#? illegal move: b b7 c1 (wrong number of arguments)
+#? [illegal move: b b7 c1 wrong number of arguments]
 
 30 play r b7
-#? = illegal move: r b7 (wrong color)
+#? [illegal move: r b7 wrong color]
 
 40 play r
-#? = illegal move: r (wrong number of arguments)
+#? [illegal move: r wrong number of arguments]
 
 50 play w b6
-#? illegal Move: w b6 (occupied)
+#? [illegal Move: w b6 occupied]
 
 60 play w a2
-#? illegal Move: w a2 (suicide)
+#? [illegal Move: w a2 suicide]
 
 70 play w b7
-#? 
+#? []
 
 play b c1
 play b c3
 play b c5
 
 80 play b c7
-#? illegal Move: b c7 (capture)
+#? [illegal Move: b c7 capture]
 
 play b d2
 play b d4
@@ -52,10 +52,10 @@ play b f4
 play b f6
 
 90 legal_moves b
-#? = a2 a4 a6 b1 b3 b5 c2 c4 c6 d1 d3 d5 d7 e2 e4 e6 f1 f3 f5 f7 g1 g2 g3 g4 g5 g6 g7
+#? [a2 a4 a6 b1 b3 b5 c2 c4 c6 d1 d3 d5 d7 e2 e4 e6 f1 f3 f5 f7 g1 g2 g3 g4 g5 g6 g7]
 
 100 legal_moves w
-#? = c6 c7 d7 f1 f3 f5 f7 g1 g2 g3 g4 g5 g6 g7
+#? [c6 c7 d7 f1 f3 f5 f7 g1 g2 g3 g4 g5 g6 g7]
 
 play b g1
 play b g3
@@ -63,7 +63,7 @@ play b g5
 play b g7
 
 110 legal_moves w
-#? c6 c7 d7
+#? [c6 c7 d7]
 
 120 legal_moves b
-#? a2 a4 a6 b1 b3 b5 c2 c4 c6 d1 d3 d5 d7 e2 e4 e6 f1 f3 f5 f7 g2 g4 g6
+#? [a2 a4 a6 b1 b3 b5 c2 c4 c6 d1 d3 d5 d7 e2 e4 e6 f1 f3 f5 f7 g2 g4 g6]
