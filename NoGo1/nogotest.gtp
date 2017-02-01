@@ -12,24 +12,45 @@ play b b2
 play b b4
 play b b6
 
+#############################################
+## This is for checking out of board error ##
+#############################################
 10 play b b8
 #? [illegal move: b b8 wrong coordinate]
 
+#############################################################
+## This is for checking too many number of arguments error ##
+#############################################################
 20 play b b7 c1
 #? [illegal move: b b7 c1 wrong number of arguments]
 
+############################################
+## This is for checking wrong color error ##
+############################################
 30 play r b7
 #? [illegal move: r b7 wrong color]
 
+#########################################################
+## This is for checking less number of arguments error ##
+#########################################################
 40 play r
 #? [illegal move: r wrong number of arguments]
 
+#############################################################
+## This is for checking same position with two stone error ##
+#############################################################
 50 play w b6
-#? [illegal Move: w b6 occupied]
+#? [illegal move: w b6 occupied]
 
+########################
+## Suicide is illegal ##
+########################
 60 play w a2
-#? [illegal Move: w a2 suicide]
+#? [illegal move: w a2 suicide]
 
+###################################
+## No message for a correct move ##
+###################################
 70 play w b7
 #? []
 
@@ -37,8 +58,11 @@ play b c1
 play b c3
 play b c5
 
+################################
+## Capture is illegal in NoGo ##
+################################
 80 play b c7
-#? [illegal Move: b c7 capture]
+#? [illegal move: b c7 capture]
 
 play b d2
 play b d4
@@ -51,9 +75,17 @@ play b f2
 play b f4
 play b f6
 
+###############################
+## Test if allow eye filling ##
+###############################
 90 legal_moves b
 #? [a2 a4 a6 b1 b3 b5 c2 c4 c6 d1 d3 d5 d7 e2 e4 e6 f1 f3 f5 f7 g1 g2 g3 g4 g5 g6 g7]
 
+#############################################################################
+#############################################################################
+## Here must have c7 in the list to make sure no move is made for error 80 ##
+#############################################################################
+#############################################################################
 100 legal_moves w
 #? [c6 c7 d7 f1 f3 f5 f7 g1 g2 g3 g4 g5 g6 g7]
 
@@ -62,11 +94,20 @@ play b g3
 play b g5
 play b g7
 
+###################################
+## Few more test for legal_moves ##
+###################################
 110 legal_moves w
 #? [c6 c7 d7]
 
+###################################
+## Few more test for legal_moves ##
+###################################
 120 legal_moves b
 #? [a2 a4 a6 b1 b3 b5 c2 c4 c6 d1 d3 d5 d7 e2 e4 e6 f1 f3 f5 f7 g2 g4 g6]
 
+######################
+## Test for passing ##
+######################
 130 play w pass
-#? [illegal move: w pass passing]
+#? [illegal move: w pass wrong coordinate]
