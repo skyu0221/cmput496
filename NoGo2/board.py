@@ -33,6 +33,11 @@ class GoBoard(object):
             self.to_play = GoBoardUtil.opponent(color)
             return True
 
+    def undo_move( self, point, color ):
+
+        self.board[point] = EMPTY
+        self.to_play = GoBoardUtil.opponent( color )
+
     @staticmethod
     def showboard(board, bd_size):
         #TODO: would be nice to have a nicer printout of the board
@@ -73,6 +78,13 @@ class GoBoard(object):
             return GoBoardUtil.opponent(self.to_play)
         else:
             return None
+
+    def end_of_game( self ):
+
+        if len( GoBoardUtil.generate_legal_moves(self, self.to_play) ) != 0:
+            return False
+        else:
+            return True
 
     def get_twoD_board(self):
         """
@@ -409,4 +421,3 @@ class GoBoard(object):
             return 'pass'
         row, col = divmod(point, self.NS)
         return row, col
-

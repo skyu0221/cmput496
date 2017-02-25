@@ -12,6 +12,11 @@ from board_util import GoBoardUtil, BLACK, WHITE, EMPTY, BORDER, FLOODFILL
 import numpy as np
 import re
 
+from multiprocessing import Process
+import time
+
+DRAW_WINNER = BLACK
+
 class GtpConnection():
 
     def __init__(self, go_engine, debug_mode = False):
@@ -29,6 +34,7 @@ class GtpConnection():
         self._debug_mode = debug_mode
         self.go_engine = go_engine
         self.komi = 0
+        self.timelimit = 1
         self.board = GoBoard(7)
         self.commands = {
             "protocol_version": self.protocol_version_cmd,
@@ -45,7 +51,9 @@ class GtpConnection():
             "list_commands": self.list_commands_cmd,
             "play": self.play_cmd,
             "final_score": self.final_score_cmd,
-            "legal_moves": self.legal_moves_cmd
+            "legal_moves": self.legal_moves_cmd,
+            "timelimit": self.timelimit_cmd,
+            "solve": self.solve_cmd
         }
 
         # used for argument checking
@@ -57,7 +65,8 @@ class GtpConnection():
             "set_free_handicap": (1, 'Usage: set_free_handicap MOVE (e.g. A4)'),
             "genmove": (1, 'Usage: genmove {w, b}'),
             "play": (2, 'Usage: play {b, w} MOVE'),
-            "legal_moves": (1, 'Usage: legal_moves {w, b}')
+            "legal_moves": (1, 'Usage: legal_moves {w, b}'),
+            "timelimit": (1, 'Usage: timelimit INT')
         }
     
     def __del__(self):
@@ -315,23 +324,118 @@ class GtpConnection():
         try:
             board_color = args[0].lower()
             color = GoBoardUtil.color_to_int(board_color)
+            self.board.to_play = color
             move = self.go_engine.get_move(self.board, color)
             if move is None:
-                self.respond("pass")
+                self.respond("resign")
                 return
 
-            if not self.board.check_legal(move, color):
-                move = self.board._point_to_coord(move)
-                board_move = GoBoardUtil.format_point(move)
-                self.respond("Illegal move: {}".format(board_move))
-                raise RuntimeError("Illegal move given by engine")
+            else:
+                perfect = self.solve_cmd( "no Message" )
 
-            # move is legal; play it
-            self.board.move(move, color)
-            self.debug_msg("Move: {}\nBoard: \n{}\n".format(move, str(self.board.get_twoD_board())))
-            move = self.board._point_to_coord(move)
-            board_move = GoBoardUtil.format_point(move)
-            self.respond(board_move)
+                if perfect[0] == GoBoardUtil.int_to_color( self.board.to_play ):
+
+                    self.play_cmd( perfect )
+
+                else:
+
+                    if not self.board.check_legal(move, color):
+                        move = self.board._point_to_coord(move)
+                        board_move = GoBoardUtil.format_point(move)
+                        self.respond("Illegal move: {}".format(board_move))
+                        raise RuntimeError("Illegal move given by engine")
+
+                    # move is legal; play it
+                    self.board.move(move, color)
+                    self.debug_msg("Move: {}\nBoard: \n{}\n".format(move, str(self.board.get_twoD_board())))
+                    move = self.board._point_to_coord(move)
+                    board_move = GoBoardUtil.format_point(move)
+                    self.respond(board_move)
+
         except Exception as e:
             self.respond('Error: {}'.format(str(e)))
 
+    def timelimit_cmd( self, args ):
+
+        self.timelimit = float(args[0])
+        self.respond()
+
+    def solve_cmd( self, args ):
+
+        return_value = "unknown"
+
+        solver     = Process( target = self.solve, args = ( self.board, \
+                                                            return_value ) )
+        start_time = time.time()
+
+        solver.start()
+
+        while solver.is_alive():
+
+            if time.time() - start_time >= self.timelimit:
+
+                solver.terminate()
+                solver.join()
+
+        if len( args ) == 0:
+            self.respond( return_value )
+        else:
+            return return_value
+
+    def is_success( self, state ):
+
+        global DRAW_WINNER
+
+        color = state.get_winner()
+
+        return (    color == state.to_play \
+                 or (     color == EMPTY \
+                      and state.to_play == DRAW_WINNER ) )
+    
+    def negamax_boolean( self, state ):
+
+        if state.end_of_game():
+
+            return self.is_success( state )
+
+        legal_moves = GoBoardUtil.generate_legal_moves( state, state.to_play )
+        legal_moves = legal_moves.split( ' ' )
+
+        for m in legal_moves:
+
+            move = GoBoardUtil.move_to_coord( m, self.board.size )
+            move = self.board._coord_to_point(move[0], move[1])
+
+            state.move( move, state.to_play )
+
+            success = not self.negamax_boolean( state )
+
+            state.undo_move( move, state.to_play )
+
+            if success:
+
+                return True
+
+        return False
+
+    def result_for_black( self, state ):
+
+        result = self.negamax_boolean( state )
+
+        if state.to_play == BLACK:
+            return result
+        else:
+            return not result
+
+    def solve( self, state, return_value ):
+
+        global DRAW_WINNER
+
+        DRAW_WINNER = GoBoardUtil.opponent( state.to_play )
+
+        win = self.result_for_black( state )
+
+        if win:
+            return_value = GoBoardUtil.int_to_color( state.to_play )
+        else:
+            return_value = GoBoardUtil.int_to_color( DRAW_WINNER )
