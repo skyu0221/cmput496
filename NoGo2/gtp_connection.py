@@ -15,7 +15,16 @@ import re
 from multiprocessing import Process, Manager
 import time
 
-DRAW_WINNER = BLACK
+class Node():
+
+    def __init__( self, value ):
+
+        self.value    = value
+        self.prev     = None
+        self.children = []
+        self.result   = None
+        self.to_play  = value.to_play
+        self.move     = None
 
 class GtpConnection():
 
@@ -37,6 +46,8 @@ class GtpConnection():
         self.timelimit = 1
         self.board = GoBoard(7)
         self.commands = {
+            "cpu_time": self.cpu_time_cmd,
+            "cputime": self.cpu_time_cmd,
             "protocol_version": self.protocol_version_cmd,
             "quit": self.quit_cmd,
             "name": self.name_cmd,
@@ -75,6 +86,9 @@ class GtpConnection():
     def write(self, data):
         self.stdout.write(data)
 
+    def cpu_time_cmd( self, args ):
+        self.respond( time.time() )
+
     def flush(self):
         self.stdout.flush()
 
@@ -110,6 +124,11 @@ class GtpConnection():
         if not elements:
             return
         command_name = elements[0]; args = elements[1:]
+
+        if command_name == "timelimit" and \
+           ( int( args[0] ) > 100 or int( args[0] ) < 1 ):
+            self.respond('illegal parameters for timelimit. 1 <= INT <= 100'.format(args[0]))
+            return
         
         if command_name == "play" and self.argmap[command_name][0] != len(args):
             self.respond('illegal move: {} wrong number of arguments'.format(args[0]))
@@ -386,65 +405,78 @@ class GtpConnection():
         else:
             return return_value['result']
 
-    def is_success( self, state ):
+    def dfs_boolean( self, state ):
 
-        global DRAW_WINNER
+        root = Node( state )
 
-        color = state.get_winner()
+        if root.value.end_of_game():
+            root.result = False
 
-        return (    color == state.to_play \
-                 or (     color == EMPTY \
-                      and state.to_play == DRAW_WINNER ) )
-    
-    def negamax_boolean( self, state ):
+        current = root
 
-        if state.end_of_game():
+        while root.result == None:
 
-            return [ self.is_success( state ), False ]
+            if len( current.children ) == 0 and current.result == None:
 
-        legal_moves = GoBoardUtil.generate_legal_moves( state, state.to_play )
-        legal_moves = legal_moves.split( ' ' )
+                tracker = GoBoardUtil.children( current.value, current.to_play )
 
-        for m in legal_moves:
+                for m in tracker:
 
-            move = GoBoardUtil.move_to_coord( m, self.board.size )
-            move = self.board._coord_to_point( move[0], move[1] )
+                    temp = current.value.copy()
+                    temp.move( m, current.to_play )
+                    temp = Node( temp )
+                    temp.move = m
+                    temp.prev = current
 
-            state.move( move, state.to_play )
-            result  = self.negamax_boolean( state )
-            success = not result[0]
+                    if temp.value.end_of_game():
+                        current.result   = True
+                        current.children = list()
+                        current.move     = m
+                        break
 
-            state.undo_move( move, state.to_play )
+                    current.children.append( temp )
 
-            if success:
+            if current.result == True and current.prev != None:
+                current = current.prev
 
-                return [ True, m ]
+            elif current.result == False and current.prev != None:
+                current.prev.result = True
+                current.prev.children = [current]
+                current = current.prev
 
-        return [ False, False ]
+            elif current.result == None:
 
-    def result_for_black( self, state ):
+                find_child = False
 
-        result = self.negamax_boolean( state )
+                for child in current.children:
 
-        if state.to_play == BLACK:
-            return result
-        else:
-            return [ not result[0], result[1] ]
+                    if child.result == None:
+                        current     = child
+                        find_child  = True
+                        break
+
+                if not find_child:
+
+                    current.result = False
+
+                    if current.prev != None:
+                        current.prev.result = True
+                        current.prev.move = current.move
+                        current = current.prev
+
+        if root.move != None:
+            x, y = self.board._point_to_coord( root.move )
+            root.move = GoBoardUtil.format_point( (x, y) )
+
+        return [root.result, root.move]
 
     def solve( self, state, return_value ):
 
-        global DRAW_WINNER
-
-        DRAW_WINNER = GoBoardUtil.opponent( state.to_play )
-
-        win = self.result_for_black( state )
-
-        if state.to_play != BLACK:
-            win[0] = not win[0]
+        win = self.dfs_boolean( state )
 
         if win[0]:
-            return_value['result'] = GoBoardUtil.int_to_color( state.to_play )
-            if win[1] != False:
-                return_value['result'] = return_value['result'] + " " + win[1]
+            return_value['result'] = GoBoardUtil.int_to_color( state.to_play ) \
+                                         + " " + win[1]
         else:
-            return_value['result'] = GoBoardUtil.int_to_color( DRAW_WINNER )
+            return_value['result'] = GoBoardUtil.int_to_color( \
+                                         GoBoardUtil.opponent( state.to_play ) )

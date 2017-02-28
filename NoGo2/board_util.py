@@ -36,6 +36,31 @@ class GoBoardUtil(object):
             gtp_moves.append(GoBoardUtil.format_point((x, y)))
         sorted_moves = ' '.join(sorted(gtp_moves))
         return sorted_moves
+
+    @staticmethod
+    def children( board, color ):
+        """
+        generate a list of legal moves
+
+        Arguments
+        ---------
+        board : np.array
+            a SIZExSIZE array representing the board
+        color : {'b','w'}
+            the color to generate the move for.
+        """
+        moves = board.get_empty_positions(color)
+        num_moves = len(moves)
+        np.random.shuffle(moves)
+        illegal_moves = []
+
+        for i in range(num_moves):
+            if board.check_legal(moves[i], color):
+                continue
+            else:
+                illegal_moves.append(i)
+        legal_moves = np.delete(moves, illegal_moves)
+        return legal_moves.tolist()
             
     @staticmethod       
     def generate_random_move(board, color):
