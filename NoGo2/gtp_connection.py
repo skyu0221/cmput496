@@ -12,7 +12,7 @@ from board_util import GoBoardUtil, BLACK, WHITE, EMPTY, BORDER, FLOODFILL
 import numpy as np
 import re
 
-from multiprocessing import Process
+from multiprocessing import Process, Manager
 import time
 
 DRAW_WINNER = BLACK
@@ -334,11 +334,14 @@ class GtpConnection():
                 perfect = self.solve_cmd( "no Message" )
 
                 if perfect[0] == GoBoardUtil.int_to_color( self.board.to_play ):
+                    perfect = perfect.split(' ')
+                    m = GoBoardUtil.move_to_coord( perfect[1], self.board.size )
+                    m = self.board._coord_to_point( m[0], m[1] )
 
-                    self.play_cmd( perfect )
+                    self.board.move( m, color )
+                    self.respond( perfect[1] )
 
                 else:
-
                     if not self.board.check_legal(move, color):
                         move = self.board._point_to_coord(move)
                         board_move = GoBoardUtil.format_point(move)
@@ -362,7 +365,7 @@ class GtpConnection():
 
     def solve_cmd( self, args ):
 
-        return_value = "unknown"
+        return_value = Manager().dict()
 
         solver     = Process( target = self.solve, args = ( self.board, \
                                                             return_value ) )
@@ -376,11 +379,12 @@ class GtpConnection():
 
                 solver.terminate()
                 solver.join()
+                return_value['result'] = "unknown"
 
         if len( args ) == 0:
-            self.respond( return_value )
+            self.respond( return_value['result'] )
         else:
-            return return_value
+            return return_value['result']
 
     def is_success( self, state ):
 
@@ -396,7 +400,7 @@ class GtpConnection():
 
         if state.end_of_game():
 
-            return self.is_success( state )
+            return [ self.is_success( state ), False ]
 
         legal_moves = GoBoardUtil.generate_legal_moves( state, state.to_play )
         legal_moves = legal_moves.split( ' ' )
@@ -404,19 +408,19 @@ class GtpConnection():
         for m in legal_moves:
 
             move = GoBoardUtil.move_to_coord( m, self.board.size )
-            move = self.board._coord_to_point(move[0], move[1])
+            move = self.board._coord_to_point( move[0], move[1] )
 
             state.move( move, state.to_play )
-
-            success = not self.negamax_boolean( state )
+            result  = self.negamax_boolean( state )
+            success = not result[0]
 
             state.undo_move( move, state.to_play )
 
             if success:
 
-                return True
+                return [ True, m ]
 
-        return False
+        return [ False, False ]
 
     def result_for_black( self, state ):
 
@@ -425,7 +429,7 @@ class GtpConnection():
         if state.to_play == BLACK:
             return result
         else:
-            return not result
+            return [ not result[0], result[1] ]
 
     def solve( self, state, return_value ):
 
@@ -435,7 +439,12 @@ class GtpConnection():
 
         win = self.result_for_black( state )
 
-        if win:
-            return_value = GoBoardUtil.int_to_color( state.to_play )
+        if state.to_play != BLACK:
+            win[0] = not win[0]
+
+        if win[0]:
+            return_value['result'] = GoBoardUtil.int_to_color( state.to_play )
+            if win[1] != False:
+                return_value['result'] = return_value['result'] + " " + win[1]
         else:
-            return_value = GoBoardUtil.int_to_color( DRAW_WINNER )
+            return_value['result'] = GoBoardUtil.int_to_color( DRAW_WINNER )
