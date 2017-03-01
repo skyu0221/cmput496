@@ -1,8 +1,8 @@
 Script started on Tue 28 Feb 2017 08:30:38 PM MST
-tzhang6@ohaton:~/cmput496>mak[K[Kkdir ~/temptester
-tzhang6@ohaton:~/cmput496>cp a2.tgz ~/twm[K[Kemptester/
+tzhang6@ohaton:~/cmput496>mkdir ~/temptester
+tzhang6@ohaton:~/cmput496>cp a2.tgz ~/temptester/
 tzhang6@ohaton:~/cmput496>cd ~/temptester/
-tzhang6@ohaton:~/temptester>a[Ktar -xvf a2.tgz 
+tzhang6@ohaton:~/temptester>tar -xvf a2.tgz 
 NoGo2/
 NoGo2/index.html
 NoGo2/nogosolvertest.gtp.out.html
@@ -15,8 +15,8 @@ NoGo2/gtp_connection.py
 NoGo2/board_util.py
 NoGo2/nogosolvertest.gtp.html
 NoGo2/public-tests-nogo-solve.gtp
-tzhang6@ohaton:~/temptester>cd Nog[KGo2/
-tzhang6@ohaton:~/temptester/NoGo2>gogui-regress Go1.py nogosolvertest.gtp ~/Downlloads/a2-sample.gtp 
+tzhang6@ohaton:~/temptester>cd NoGo2/
+tzhang6@ohaton:~/temptester/NoGo2>gogui-regress Go1.py nogosolvertest.gtp ~/Downloads/a2-sample.gtp 
 tzhang6@ohaton:~/temptester/NoGo2>exit
 exit
 
