@@ -1,9 +1,8 @@
-脚本启动于 Tue 28 Feb 2017 08:14:26 PM MST
-]0;tianyu@tianyu-XPS-13-9350: ~/Documents/cmput496/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/Documents/cmput496/NoGo2[00m$ cd [K[K[Kcp ../a2.tgz ~/D
-Desktop/   Documents/ Downloads/ 
-]0;tianyu@tianyu-XPS-13-9350: ~/Documents/cmput496/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/Documents/cmput496/NoGo2[00m$ cp ../a2.tgz ~/D[K
-]0;tianyu@tianyu-XPS-13-9350: ~/Documents/cmput496/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/Documents/cmput496/NoGo2[00m$ cd ~/
-]0;tianyu@tianyu-XPS-13-9350: ~[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~[00m$ tar -xvf a2.tgz 
+Script started on Tue 28 Feb 2017 08:30:38 PM MST
+tzhang6@ohaton:~/cmput496>mak[K[Kkdir ~/temptester
+tzhang6@ohaton:~/cmput496>cp a2.tgz ~/twm[K[Kemptester/
+tzhang6@ohaton:~/cmput496>cd ~/temptester/
+tzhang6@ohaton:~/temptester>a[Ktar -xvf a2.tgz 
 NoGo2/
 NoGo2/index.html
 NoGo2/nogosolvertest.gtp.out.html
@@ -16,9 +15,9 @@ NoGo2/gtp_connection.py
 NoGo2/board_util.py
 NoGo2/nogosolvertest.gtp.html
 NoGo2/public-tests-nogo-solve.gtp
-]0;tianyu@tianyu-XPS-13-9350: ~[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~[00m$ cd Nog[KGo2/
-]0;tianyu@tianyu-XPS-13-9350: ~/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/NoGo2[00m$ gogui-regress Go1.py a2[K[Knogosolvertest.gtp ~/Dow nloads/a2-sample.gtp 
-]0;tianyu@tianyu-XPS-13-9350: ~/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/NoGo2[00m$ exit
+tzhang6@ohaton:~/temptester>cd Nog[KGo2/
+tzhang6@ohaton:~/temptester/NoGo2>gogui-regress Go1.py nogosolvertest.gtp ~/Downlloads/a2-sample.gtp 
+tzhang6@ohaton:~/temptester/NoGo2>exit
 exit
 
-脚本完成，于 Tue 28 Feb 2017 08:18:45 PM MST
+Script done on Tue 28 Feb 2017 08:34:55 PM MST
