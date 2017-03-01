@@ -1,0 +1,24 @@
+脚本启动于 Tue 28 Feb 2017 08:14:26 PM MST
+]0;tianyu@tianyu-XPS-13-9350: ~/Documents/cmput496/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/Documents/cmput496/NoGo2[00m$ cd [K[K[Kcp ../a2.tgz ~/D
+Desktop/   Documents/ Downloads/ 
+]0;tianyu@tianyu-XPS-13-9350: ~/Documents/cmput496/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/Documents/cmput496/NoGo2[00m$ cp ../a2.tgz ~/D[K
+]0;tianyu@tianyu-XPS-13-9350: ~/Documents/cmput496/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/Documents/cmput496/NoGo2[00m$ cd ~/
+]0;tianyu@tianyu-XPS-13-9350: ~[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~[00m$ tar -xvf a2.tgz 
+NoGo2/
+NoGo2/index.html
+NoGo2/nogosolvertest.gtp.out.html
+NoGo2/Go1.py
+NoGo2/readme.txt
+NoGo2/presubmission.log
+NoGo2/nogosolvertest.gtp
+NoGo2/board.py
+NoGo2/gtp_connection.py
+NoGo2/board_util.py
+NoGo2/nogosolvertest.gtp.html
+NoGo2/public-tests-nogo-solve.gtp
+]0;tianyu@tianyu-XPS-13-9350: ~[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~[00m$ cd Nog[KGo2/
+]0;tianyu@tianyu-XPS-13-9350: ~/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/NoGo2[00m$ gogui-regress Go1.py a2[K[Knogosolvertest.gtp ~/Dow nloads/a2-sample.gtp 
+]0;tianyu@tianyu-XPS-13-9350: ~/NoGo2[01;32mtianyu@tianyu-XPS-13-9350[00m:[01;34m~/NoGo2[00m$ exit
+exit
+
+脚本完成，于 Tue 28 Feb 2017 08:18:45 PM MST
