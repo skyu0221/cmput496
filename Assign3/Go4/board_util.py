@@ -163,6 +163,31 @@ class GoBoardUtil(object):
                 Note that even if True, this filter only applies to pattern moves
             use_pattern: Use pattern policy?
         """
+        if board.last_move == None:   #check last move for initiation
+            pass
+#if move could capture the last move, generate this move only
+        else: 
+#inserting Atari capture rules:
+            #check last move liberty
+            last_move = board.last_move
+            max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move,color, 2)
+            if max_old_liberty == 1:
+            #generate moves, find the last liberty position and try if it is legal.
+            ## how to find the position?
+                moves = generate_random_moves(board)
+                color = board.current_player
+                move = []
+            return item
+            ##get all the moves which passed the filter into move list
+            #for item in moves:
+                #if filter_moves_and_generate(board, item, check_selfatari):
+                    #move.append(item)
+            ##for every passed move(actually only one in move) check legal 
+            #cboard = board.copy()
+            #for item in move:
+                #isLegalMove = cboard.move(item,color)
+            
+            
         move = None
         if use_pattern:
             moves = GoBoardUtil.generate_pattern_moves(board)
@@ -279,7 +304,7 @@ class GoBoardUtil(object):
         """convert character representing player color to the appropriate number"""
         color_to_int = {"b": BLACK , "w": WHITE, "e":EMPTY, "BORDER":BORDER, "FLOODFILL":FLOODFILL}
         try:
-           return color_to_int[c] 
+            return color_to_int[c] 
         except:
             raise ValueError("wrong color")
     
@@ -288,7 +313,7 @@ class GoBoardUtil(object):
         """convert number representing player color to the appropriate character """
         int_to_color = {BLACK:"b", WHITE:"w", EMPTY:"e", BORDER:"BORDER", FLOODFILL:"FLOODFILL"}
         try:
-           return int_to_color[i] 
+            return int_to_color[i] 
         except:
             raise ValueError("Provided integer value for color is invalid")
          
