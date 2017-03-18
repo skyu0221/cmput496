@@ -51,6 +51,7 @@ class GoBoardUtil(object):
         for move in empty:
             if board.check_legal(move, color):
                 legal_moves.append(move)
+        print (legal_moves)
         return legal_moves
 
     @staticmethod
@@ -163,6 +164,8 @@ class GoBoardUtil(object):
                 Note that even if True, this filter only applies to pattern moves
             use_pattern: Use pattern policy?
         """
+        
+        color = board.current_player
         if board.last_move == None:   #check last move for initiation
             pass
 #if move could capture the last move, generate this move only
@@ -170,22 +173,16 @@ class GoBoardUtil(object):
 #inserting Atari capture rules:
             #check last move liberty
             last_move = board.last_move
-            max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move,color, 2)
+            max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move,color, 0)
             if max_old_liberty == 1:
             #generate moves, find the last liberty position and try if it is legal.
-            ## how to find the position?
-                moves = generate_random_moves(board)
-                color = board.current_player
-                move = []
-            return item
-            ##get all the moves which passed the filter into move list
-            #for item in moves:
-                #if filter_moves_and_generate(board, item, check_selfatari):
-                    #move.append(item)
-            ##for every passed move(actually only one in move) check legal 
-            #cboard = board.copy()
-            #for item in move:
-                #isLegalMove = cboard.move(item,color)
+            ## how to find the position(move) of the last liberty?
+                moves = generate_legal_moves(board, color)
+                for move in moves:
+                    if board.board[move] == EMPTY: ##problem here
+                        if not selfatari(board, move, color) and not filleye_filter(board, move, color):
+                            return item
+#Atari capture rules done.
             
             
         move = None
