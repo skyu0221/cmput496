@@ -165,26 +165,27 @@ class GoBoardUtil(object):
                 Note that even if True, this filter only applies to pattern moves
             use_pattern: Use pattern policy?
         """
-        
-        color = board.current_player
-        if board.last_move == None:   #check last move for initiation
+#check last move for initiation
+        current_color = board.current_player
+        last_color = opponent(current_color)
+        if board.last_move == None:   
             pass
 #if move could capture the last move, generate this move only
         else: 
 #inserting Atari capture rules:
             #check last move liberty
             last_move = board.last_move
-            max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move,color, 0)
+            max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move, last_color, 0)
             if max_old_liberty == 1:
             #find the last moves' empty neighbors, check if move is the last liberty
                 empty_neighbors = board.last_moves_empty_neighbors()
-                moves = generate_legal_moves(board, color)
+                moves = generate_legal_moves(board, current_color)
                 for move in moves:
                     if move in empty_neighbors:
-                        if not selfatari(board, move, color) and not filleye_filter(board, move, color):
+                        if not selfatari(board, move, current_color) and not filleye_filter(board, move, current_color):
                             return move
 #Atari capture rules done.
-            
+#Atari Defense
             
         move = None
         if use_pattern:
