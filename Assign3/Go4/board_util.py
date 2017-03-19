@@ -157,6 +157,7 @@ class GoBoardUtil(object):
         
     @staticmethod
     def generate_move_with_filter(board, use_pattern, check_selfatari):
+        print ('In generate_move_with_filter')
         """
             Arguments
             ---------
@@ -181,7 +182,7 @@ class GoBoardUtil(object):
                 for move in moves:
                     if board.board[move] == EMPTY: ##problem here
                         if not selfatari(board, move, color) and not filleye_filter(board, move, color):
-                            return item
+                            return move
 #Atari capture rules done.
             
             
