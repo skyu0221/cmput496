@@ -166,16 +166,17 @@ class GoBoardUtil(object):
             use_pattern: Use pattern policy?
         """
 #check last move for initiation
-        current_color = board.current_player
-        last_color = opponent(current_color)
         if board.last_move == None:   
             pass
 #if move could capture the last move, generate this move only
         else: 
 #inserting Atari capture rules:
             #check last move liberty
+            current_color = board.current_player
+            last_color = opponent(current_color)            
             last_move = board.last_move
             max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move, last_color, 0)
+            max_current_liberty = GoBoardUtil.blocks_max_liberty(board, last_move, current_color, 0)
             if max_old_liberty == 1:
             #find the last moves' empty neighbors, check if move is the last liberty
                 empty_neighbors = board.last_moves_empty_neighbors()
@@ -185,8 +186,44 @@ class GoBoardUtil(object):
                         if not selfatari(board, move, current_color) and not filleye_filter(board, move, current_color):
                             return move
 #Atari capture rules done.
-#Atari Defense
-            
+#Atari Defense. Run away: if the last move makes the current colors' block has only liberty
+            if max_current_liberty == 1:
+                if max_old_liberty != 1:
+                    candidate = []
+                    moves = generate_legal_moves(board, current_color)
+                    empty_neighbors = board.last_moves_empty_neighbors()
+                    for move in moves:
+                        if move in empty_neighbors:
+                            cboard = board.copy()
+                            isLegal = cboard.move(move, current_color)
+                            if isLegal:
+                                new_liberty = cboard._liberty(move, current_color)
+                                if new_liberty > 1:
+                                    if not selfatari(cboard, move, current_color) and not filleye_filter(cboard, move, current_color):
+                                        candidate.append(move)
+                    if len(candidate) != 0:
+                        return random.choice(candidate)
+#Run away done
+#Gain liberties by capturing opponent adjacent stones.  
+##problem: how to find the adjacent opponent points.
+                elif max_old_liberty == 1:
+                    candidate = []
+                    moves = generate_legal_moves(board, current_color)
+                    neighbor = board._neighbors(last_move)
+                    Nneighbor = []
+                    for move in moves:
+                        if move in empty_neighbors:
+                            cboard = board.copy()
+                            isLegal = cboard.move(move, current_color)
+                            if isLegal:
+                                new_liberty = cboard._liberty(move, current_color)
+                                if new_liberty > max_old_liberty:
+                                    if not selfatari(cboard, move, current_color) and not filleye_filter(cboard, move, current_color):
+                                        candidate.append(move)
+                    if len(candidate) != 0:
+                        return random.choice(candidate)
+#capturing done                
+
         move = None
         if use_pattern:
             moves = GoBoardUtil.generate_pattern_moves(board)
