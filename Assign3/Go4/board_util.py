@@ -176,11 +176,11 @@ class GoBoardUtil(object):
             last_move = board.last_move
             max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move,color, 0)
             if max_old_liberty == 1:
-            #generate moves, find the last liberty position and try if it is legal.
-            ## how to find the position(move) of the last liberty?
+            #find the last moves' empty neighbors, check if move is the last liberty
+                empty_neighbors = board.last_moves_empty_neighbors()
                 moves = generate_legal_moves(board, color)
                 for move in moves:
-                    if board.board[move] == EMPTY: ##problem here
+                    if move in empty_neighbors:
                         if not selfatari(board, move, color) and not filleye_filter(board, move, color):
                             return move
 #Atari capture rules done.
