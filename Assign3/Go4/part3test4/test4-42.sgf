@@ -1,0 +1,15 @@
+(;FF[4]CA[UTF-8]AP[gogui-twogtp:1.4.9]SZ[5]
+KM[6.5]PB[Go4:0.3]PW[Go4:0.3]DT[2017-03-21]RE[B+18.5]
+C[Black command: ./Go4/Go4.py --sim 50
+White command: ./Go4.py --sim 50
+Black version: 0.3
+White version: 0.3
+Result[Black\]: B+18.5
+Result[White\]: B+18.5
+Host: tianyu-XPS-13-9350 (Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz)
+Date: March 21, 2017 8:10:11 AM MDT]
+;B[cc];W[ec];B[dd];W[ba];B[ab];W[da];B[cb];W[dc];B[bd];W[bb]
+;B[cd];W[ca];B[bc];W[be];B[db];W[eb];B[ed];W[ad];B[ea];W[ae]
+;B[ce];W[de];B[ee];W[dc];B[ac];W[ae];B[be];W[ec];B[ad];W[eb]
+;B[aa];W[];B[ea];W[dc];B[ec];W[bb];B[ba];W[ca];B[da];W[]
+;B[])
