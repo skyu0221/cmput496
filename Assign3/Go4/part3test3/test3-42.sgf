@@ -1,0 +1,14 @@
+(;FF[4]CA[UTF-8]AP[gogui-twogtp:1.4.9]SZ[5]
+KM[6.5]PB[Go4:0.3]PW[Go4:0.3]DT[2017-03-21]RE[W+9.5]
+C[Black command: ./Go4/Go4.py --sim 50
+White command: ./Go4AC.py --sim 50
+Black version: 0.3
+White version: 0.3
+Result[Black\]: W+9.5
+Result[White\]: W+9.5
+Host: ug12 (Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz)
+Date: March 21, 2017 8:20:41 AM MDT]
+;B[cc];W[cd];B[bd];W[dc];B[be];W[dd];B[db];W[cb];B[ca];W[bc]
+;B[bb];W[ee];B[cc];W[eb];B[ce];W[cb];B[ab];W[da];B[ba];W[ae]
+;B[ed];W[de];B[ad];W[ac];B[cc];W[bc];B[];W[ac];B[cc];W[bc]
+;B[];W[ac];B[cc];W[bc];B[ac];W[cc];B[];W[ec];B[];W[])

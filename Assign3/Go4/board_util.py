@@ -16,11 +16,13 @@ class GoBoardUtil(object):
         limit = kwargs.pop('limit', 1000)
         check_selfatari = kwargs.pop('selfatari', True)
         pattern = kwargs.pop('pattern', True)
+        AC = kwargs.pop('AC', True)
+        AD = kwargs.pop('AD', True)
         if kwargs:
             raise TypeError('Unexpected **kwargs: %r' % kwargs)
         numPass = 0
         for _ in range(limit):
-            move = GoBoardUtil.generate_move_with_filter(board,pattern,check_selfatari)
+            move = GoBoardUtil.generate_move_with_filter(board,pattern,AC,AD,check_selfatari)
             if move != None:
                 isLegalMove = board.move(move,color)
                 assert isLegalMove
@@ -51,7 +53,6 @@ class GoBoardUtil(object):
         for move in empty:
             if board.check_legal(move, color):
                 legal_moves.append(move)
-        print (legal_moves)
         return legal_moves
 
     @staticmethod
@@ -81,6 +82,51 @@ class GoBoardUtil(object):
             Use in UI only. For playing, use generate_move_with_filter
             which is more efficient
         """
+        if board.last_move != None:
+
+            opponent_color = board.get_color( board.last_move )
+            player_color   = GoBoardUtil.opponent( opponent_color )
+
+            num_lib = board.block_liberty( board.last_move )
+
+            if num_lib == 1:
+
+                moves = board.last_move_empty_neighbors()
+                moves = GoBoardUtil.filter_moves(board, moves, check_selfatari)
+
+                if len( moves ) != 0:
+                    return moves, "AtariCapture"
+
+            neighbors = board._neighbors( board.last_move )
+    
+            moves = []
+
+            for n in neighbors:
+
+                if board.get_color( n ) == player_color:
+
+                    liberties = board.block_liberty_list( n )
+
+                    if len( liberties ) == 1:
+
+                        temp_move = liberties[0]
+
+                        if board._liberty( temp_move, player_color ) > 1:
+                            moves.append( temp_move )
+
+                        opponent_blocks = board.block_opponent_neighbors( n )
+
+                        for block in opponent_blocks:
+
+                            liberty = board.block_liberty_list( block[0] )
+
+                            if len( liberty ) == 1:
+                                moves.append( liberty[0] )
+
+            moves = GoBoardUtil.filter_moves(board, moves, check_selfatari)
+            if len( moves ) > 0:
+                return moves, "AtariDefense"
+
         pattern_moves = GoBoardUtil.generate_pattern_moves(board)
         pattern_moves = GoBoardUtil.filter_moves(board, pattern_moves, check_selfatari)
         if len(pattern_moves) > 0:
@@ -156,8 +202,7 @@ class GoBoardUtil(object):
         return None
         
     @staticmethod
-    def generate_move_with_filter(board, use_pattern, check_selfatari):
-        print ('In generate_move_with_filter')
+    def generate_move_with_filter(board, use_pattern, AC, AD, check_selfatari):
         """
             Arguments
             ---------
@@ -165,73 +210,58 @@ class GoBoardUtil(object):
                 Note that even if True, this filter only applies to pattern moves
             use_pattern: Use pattern policy?
         """
-#check last move for initiation
-        if board.last_move == None:   
-            pass
-#if move could capture the last move, generate this move only
-        else: 
-#inserting Atari capture rules:
-            #check last move liberty
-            current_color = board.current_player
-            last_color = opponent(current_color)            
-            last_move = board.last_move
-            max_old_liberty = GoBoardUtil.blocks_max_liberty(board, last_move, last_color, 0)
-            max_current_liberty = GoBoardUtil.blocks_max_liberty(board, last_move, current_color, 0)
-            if max_old_liberty == 1:
-            #find the last moves' empty neighbors, check if move is the last liberty
-                empty_neighbors = board.last_moves_empty_neighbors()
-                moves = generate_legal_moves(board, current_color)
-                for move in moves:
-                    if move in empty_neighbors:
-                        if not selfatari(board, move, current_color) and not filleye_filter(board, move, current_color):
-                            return move
-#Atari capture rules done.
-#Atari Defense. Run away: if the last move makes the current colors' block has only liberty
-            if max_current_liberty == 1:
-                if max_old_liberty != 1:
-                    candidate = []
-                    moves = generate_legal_moves(board, current_color)
-                    empty_neighbors = board.last_moves_empty_neighbors()
-                    for move in moves:
-                        if move in empty_neighbors:
-                            cboard = board.copy()
-                            isLegal = cboard.move(move, current_color)
-                            if isLegal:
-                                new_liberty = cboard._liberty(move, current_color)
-                                if new_liberty > 1:
-                                    if not selfatari(cboard, move, current_color) and not filleye_filter(cboard, move, current_color):
-                                        candidate.append(move)
-                    if len(candidate) != 0:
-                        return random.choice(candidate)
-#Run away done
-#Gain liberties by capturing opponent adjacent stones.  
-##problem: how to find the adjacent opponent points.
-                elif max_old_liberty == 1:
-                    candidate = []
-                    moves = generate_legal_moves(board, current_color)
-                    neighbor = board._neighbors(last_move)
-                    Nneighbor = []
-                    for move in moves:
-                        if move in empty_neighbors:
-                            cboard = board.copy()
-                            isLegal = cboard.move(move, current_color)
-                            if isLegal:
-                                new_liberty = cboard._liberty(move, current_color)
-                                if new_liberty > max_old_liberty:
-                                    if not selfatari(cboard, move, current_color) and not filleye_filter(cboard, move, current_color):
-                                        candidate.append(move)
-                    if len(candidate) != 0:
-                        return random.choice(candidate)
-#capturing done                
-
         move = None
-        if use_pattern:
+
+        if AC and board.last_move != None:
+
+            opponent_color = board.get_color( board.last_move )
+            player_color   = GoBoardUtil.opponent( opponent_color )
+
+            num_lib = board.block_liberty( board.last_move )
+
+            if num_lib == 1:
+
+                moves = board.last_move_empty_neighbors()
+                move = GoBoardUtil.filter_moves_and_generate( board, moves, 
+                                                               check_selfatari )
+
+        if move == None and AD and board.last_move != None:
+            neighbors = board._neighbors( board.last_move )
+            moves = []
+
+            for n in neighbors:
+
+                if board.get_color( n ) == player_color:
+
+                    liberties = board.block_liberty_list( n )
+
+                    if len( liberties ) == 1:
+
+                        temp_move = liberties[0]
+
+                        if board._liberty( temp_move, player_color ) > 1:
+                            moves.append( temp_move )
+
+                        opponent_blocks = board.block_opponent_neighbors( n )
+
+                        for block in opponent_blocks:
+
+                            liberty = board.block_liberty_list( block[0] )
+
+                            if len( liberty ) == 1:
+                                moves.append( liberty[0] )
+
+            if len( moves ) > 0:
+                move = GoBoardUtil.filter_moves_and_generate( board, moves, 
+                                                               check_selfatari )
+
+        if move == None and use_pattern:
             moves = GoBoardUtil.generate_pattern_moves(board)
             move = GoBoardUtil.filter_moves_and_generate(board, moves, 
                                                          check_selfatari)
         if move == None:
             move = GoBoardUtil.generate_random_move(board)
-        return move 
+        return move
     
     @staticmethod
     def selfatari(board, move, color):
@@ -340,7 +370,7 @@ class GoBoardUtil(object):
         """convert character representing player color to the appropriate number"""
         color_to_int = {"b": BLACK , "w": WHITE, "e":EMPTY, "BORDER":BORDER, "FLOODFILL":FLOODFILL}
         try:
-            return color_to_int[c] 
+           return color_to_int[c] 
         except:
             raise ValueError("wrong color")
     
@@ -349,7 +379,7 @@ class GoBoardUtil(object):
         """convert number representing player color to the appropriate character """
         int_to_color = {BLACK:"b", WHITE:"w", EMPTY:"e", BORDER:"BORDER", FLOODFILL:"FLOODFILL"}
         try:
-            return int_to_color[i] 
+           return int_to_color[i] 
         except:
             raise ValueError("Provided integer value for color is invalid")
          

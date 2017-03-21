@@ -31,13 +31,17 @@ class GtpConnection():
         self._debug_mode = debug_mode
         sys.stdout = self
         self.go_engine = go_engine
-        self.go_engine.komi = 0
+        self.go_engine.komi = 6.5
         self.go_engine.selfatari = 1 
         self.go_engine.pattern = 1
-        self.board = GoBoard(7)
+        self.go_engine.AC = 1
+        self.go_engine.AD = 1
+        self.board = GoBoard(5)
         self.param_options = {
             "selfatari" :  self.go_engine.selfatari,
-            "pattern" : self.go_engine.pattern
+            "pattern" : self.go_engine.pattern,
+            "atari_capture" : self.go_engine.AC,
+            "atari_defense" : self.go_engine.AD
         }
         self.commands = {
             "protocol_version": self.protocol_version_cmd,
@@ -283,7 +287,7 @@ class GtpConnection():
 
     def go_param_cmd(self, args):
         valid_values = [0,1]
-        valid_params = ['selfatari','pattern']
+        valid_params = ['selfatari','pattern','atari_capture','atari_defense']
         param = args[0]
         param_value = int(args[1])
         if param not in valid_params:
@@ -404,5 +408,7 @@ class GtpConnection():
             move = self.board._point_to_coord(move)
             board_move = GoBoardUtil.format_point(move)
             self.respond(board_move)
-        except Exception as e:
-            self.respond('Error: {}'.format(str(e)))
+        except EOFError:
+            pass
+        #except Exception as e:
+            #self.respond('Error: {}'.format(str(e)))

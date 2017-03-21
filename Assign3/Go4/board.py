@@ -336,7 +336,6 @@ class GoBoard(object):
                     met_points.append(n)
         return liberty
 
-
     def _liberty_flood(self,board):
         """
         This function find the liberties of flood filled board.
@@ -516,6 +515,90 @@ class GoBoard(object):
             elif self.board[d] == BORDER:
                 pattern += ' '
         return pattern
+
+    def find_block( self, point ):
+
+        block_list = [point]
+        flood_list = [point]
+        color = self.board[point]
+
+        while flood_list:
+
+            current = flood_list.pop()
+            nb = self._neighbors( current )
+
+            for n in nb:
+
+                if self.board[n] == color and n not in block_list:
+                    block_list.append(n)
+                    flood_list.append(n)
+
+        return block_list
+
+    def block_liberty( self, point ):
+
+        color = self.board[point]
+        empty = []
+        block = self.find_block( point )
+
+        for n in block:
+
+            nb = self._neighbors( n )
+
+            for i in nb:
+
+                if self.board[i] == EMPTY and i not in empty:
+                    empty.append(i)
+
+        return len( empty )
+
+    def block_liberty_list( self, point ):
+
+        color = self.board[point]
+        empty = []
+        block = self.find_block( point )
+
+        for n in block:
+
+            nb = self._neighbors( n )
+
+            for i in nb:
+
+                if self.board[i] == EMPTY and i not in empty:
+                    empty.append(i)
+
+        return empty
+
+    def block_opponent_neighbors( self, point ):
+
+        neighbors = []
+        color = self.board[point]
+        points = self.find_block( point )
+
+        for point in points:
+
+            nb = self._neighbors( point )
+
+            for n in nb:
+                if n not in neighbors:
+                    if self.board[n] == GoBoardUtil.opponent( color ):
+                        neighbors.append( n )
+
+        block_neighbors = []
+
+        while neighbors:
+
+            current = neighbors.pop()
+            block = self.find_block( current )
+
+            for n in block:
+
+                if n in neighbors:
+                    neighbors.remove( n )
+
+            block_neighbors.append( block )
+
+        return block_neighbors
     
     def last_moves_empty_neighbors(self):
         """
@@ -533,6 +616,23 @@ class GoBoard(object):
             if c is None:  continue
             nb_of_c_list = list(self._neighbors(c) + self._diag_neighbors(c))
             nb_list += [d for d in nb_of_c_list if self.board[d] == EMPTY and d not in nb_list]
+        return nb_list
+
+    def last_move_empty_neighbors(self):
+        """
+        Get the neighbors of last_move. 
+        This function is based on code in
+        https://github.com/pasky/michi/blob/master/michi.py
+        
+        Returns
+        -------
+        points :
+        points which are neighbors of last_move and last2_move
+        """
+        nb_list = []
+        c = self.last_move
+        nb_of_c_list = list(self._neighbors(c))
+        nb_list += [d for d in nb_of_c_list if self.board[d] == EMPTY and d not in nb_list]
         return nb_list
             
     def _border_removal(self,points):
