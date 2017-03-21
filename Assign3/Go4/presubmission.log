@@ -1,0 +1,28 @@
+Script started on Tue 21 Mar 2017 11:34:15 AM MDT
+tzhang6@ug10:~/cmput496/Assign3>mkdir ~/a3presubmission
+tzhang6@ug10:~/cmput496/Assign3>cp a3.tgz ~/a3presubmission
+tzhang6@ug10:~/cmput496/Assign3>cd ~/a3presubmission
+tzhang6@ug10:~/a3presubmission>tar -xvf a3.tgz
+Go4/a3-sample.gtp
+Go4/board.py
+Go4/board_util.py
+Go4/Go4.py
+Go4/Go4AC.py
+Go4/gtp_connection.py
+Go4/pattern.py
+Go4/PolicyPlayer.py
+Go4/test1.dat
+Go4/test1.html
+Go4/test2.dat
+Go4/test2.html
+Go4/test3.dat
+Go4/test3.html
+Go4/test4.dat
+Go4/test4.html
+Go4/readme.txt
+tzhang6@ug10:~/a3presubmission>cd Go4
+tzhang6@ug10:~/a3presubmission/Go4>gogui-regress Go4.py a3-sample.gtp
+tzhang6@ug10:~/a3presubmission/Go4>exit
+exit
+
+Script done on Tue 21 Mar 2017 11:35:56 AM MDT
