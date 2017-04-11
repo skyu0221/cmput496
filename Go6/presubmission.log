@@ -17,7 +17,7 @@ Go6/policy_probabilistic_player.py
 Go6/gtp_connection.py
 Go6/features_weight.dat
 Go6/a4-sample.gtp
-tzhang6@ohaton:~/a4presubmission>cd F[KGo6
+tzhang6@ohaton:~/a4presubmission>cd Go6
 tzhang6@ohaton:~/a4presubmission/Go6>gogui-regress Go6.py a4-sample.gtp
 tzhang6@ohaton:~/a4presubmission/Go6>exit
 exit
