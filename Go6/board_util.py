@@ -5,6 +5,7 @@ BORDER = 3
 FLOODFILL = 4
 import numpy as np
 from pattern import pat3set
+from operator import itemgetter
 import sys
 import random
 
@@ -94,6 +95,7 @@ class GoBoardUtil(object):
             Use in UI only. For playing, use generate_move_with_filter
             which is more efficient
         """
+        '''
         atari_moves,msg = GoBoardUtil.generate_atari_moves(board)
         atari_moves = GoBoardUtil.filter_moves(board, atari_moves, check_selfatari)
         if len(atari_moves) > 0:
@@ -103,6 +105,10 @@ class GoBoardUtil(object):
         if len(pattern_moves) > 0:
             return pattern_moves, "Pattern"
         return GoBoardUtil.generate_random_moves(board), "Random"
+        '''
+
+        return GoBoardUtil.generate_prob_playout_moves( board, check_selfatari )
+        
 
     @staticmethod
     def generate_random_moves(board):
@@ -222,9 +228,13 @@ class GoBoardUtil(object):
         """
         move = None
         #TODO make dictionary for options so argument passing becomes cleaner and add atari defence to it
-        moves,_ = GoBoardUtil.generate_atari_moves(board)
-        move = GoBoardUtil.filter_moves_and_generate(board, moves, 
-                                                  check_selfatari)
+        #moves,_ = GoBoardUtil.generate_atari_moves(board)
+        #move = GoBoardUtil.filter_moves_and_generate(board, moves, 
+                                                  #check_selfatari)
+
+        moves = GoBoardUtil.generate_prob_playout_moves( board )
+        move  = GoBoardUtil.generate_probabilistic( moves )
+        '''
         if move:
             return move
         if use_pattern:
@@ -233,7 +243,92 @@ class GoBoardUtil(object):
                                                          check_selfatari)
         if move == None:
             move = GoBoardUtil.generate_random_move(board)
+        '''
         return move 
+
+    @staticmethod
+    def generate_prob_playout_moves( board ):
+        '''
+        list_prob  = [ list( node._children.keys() ), [] ]
+        gammas_sum = 0.0
+
+        list_prob[0].remove( "pass" )
+        list_prob[0] = list( map( int, list_prob[0] ) )
+        list_prob[0] = GoBoardUtil.filter_moves( board, \
+                                                 list_prob[0], \
+                                                 check_selfatari )
+
+        for move in list_prob[0]:
+            list_prob[1].append( node._children[move]._prob_simple_feature )
+            gammas_sum += node._children[move]._prob_simple_feature
+
+        if gammas_sum != 0.0:
+
+            for move in range( len( list_prob[1] ) ):
+
+                list_prob[1][move]  = list_prob[1][move] / gammas_sum
+
+        return list_prob
+        '''
+        from feature import Feature
+        from feature import Features_weight
+
+        gammas_sum         = 0.0
+        moves              = board.get_empty_points()
+        all_board_features = Feature.find_all_features( board )
+        probabilistic      = {}
+        color              = board.current_player
+
+        for move in moves:
+
+            if not GoBoardUtil.filleye_filter( board, move, color ):
+                probabilistic[move] = 0
+
+                if len( Features_weight ) != 0:
+                    assert move in all_board_features
+
+                    probabilistic[move] = Feature.compute_move_gamma( \
+                                                      Features_weight, \
+                                                      all_board_features[move] )
+                    gammas_sum += probabilistic[move]
+
+        list_prob   = []
+
+        # Normalize to get probability
+        if len( Features_weight ) != 0 and gammas_sum != 0.0:
+
+            for move in moves:
+
+                if not GoBoardUtil.filleye_filter( board, move, color ):
+                    probabilistic[move] = probabilistic[move] / gammas_sum
+                    list_prob.append( [move, probabilistic[move]] )
+
+        list_prob = sorted( list_prob, key = itemgetter(1), reverse=True )
+
+        return list_prob
+
+
+    @staticmethod
+    def generate_probabilistic( probabilistic ):
+
+        if len( probabilistic ) == 0:
+            return None
+
+        p = []
+        for i in probabilistic:
+            p.append( i[1] )
+
+        candidate = np.random.choice( len( probabilistic ), p = p )
+
+        return probabilistic[candidate][0]
+
+    @staticmethod
+    def generate_max( probabilistic ):
+
+        if len( probabilistic ) == 0:
+            return None
+
+        return probabilistic[0][0]
     
     @staticmethod
     def selfatari(board, move, color):
