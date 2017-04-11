@@ -107,7 +107,7 @@ class GoBoardUtil(object):
         return GoBoardUtil.generate_random_moves(board), "Random"
         '''
 
-        return GoBoardUtil.generate_prob_playout_moves( board, check_selfatari )
+        return GoBoardUtil.generate_prob_playout_moves( board )
         
 
     @staticmethod
