@@ -1,0 +1,25 @@
+Script started on Tue 11 Apr 2017 12:38:08 AM MDT
+tzhang6@ohaton:~/cmput496>mkdir ~/a4presubmission
+tzhang6@ohaton:~/cmput496>cp a4.tgz ~/a4presubmission
+tzhang6@ohaton:~/cmput496>cd ~/a4presubmission
+tzhang6@ohaton:~/a4presubmission>tar -xvf a4.tgz
+Go6/
+Go6/readme.txt
+Go6/pattern.py
+Go6/board_util.py
+Go6/createFeatures.sh
+Go6/policy_max_player.py
+Go6/Go6.py
+Go6/feature.py
+Go6/board.py
+Go6/mcts.py
+Go6/policy_probabilistic_player.py
+Go6/gtp_connection.py
+Go6/features_weight.dat
+Go6/a4-sample.gtp
+tzhang6@ohaton:~/a4presubmission>cd F[KGo6
+tzhang6@ohaton:~/a4presubmission/Go6>gogui-regress Go6.py a4-sample.gtp
+tzhang6@ohaton:~/a4presubmission/Go6>exit
+exit
+
+Script done on Tue 11 Apr 2017 12:39:39 AM MDT
